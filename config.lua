@@ -11,7 +11,7 @@ Config.Warehouse = {
     crateThree = vector3(1095.01, -3096.59, -39.0), 
     crateFour = vector3(1091.53, -3096.59, -39.0), 
     weaponCrate = vector3(1095.94, -3102.36, -39.0) 
-  
+}
 
 -- Guard Positions
 Config.Guards = {
@@ -26,7 +26,7 @@ Config.Robbery = {
     requiredStartItem = "electronickit",
     robberyTime = 600,                  
     coolDown = 1800                     
-  
+}
 
 -- Item and reward settings
 Config.Items = {
