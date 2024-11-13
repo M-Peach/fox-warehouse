@@ -6,18 +6,18 @@ Config.Warehouse = {
     frontExit = vector3(1105.07, -3099.63, -39.0),  
     backExit = vector3(1087.44, -3099.38, -39.0),   
     disableSecurity = vector3(977.71, -1497.37, 31.29),
-    crateOne = vector3(1101.32, -3096.59, -39.0),   
-    crateTwo = vector3(1097.69, -3096.59, -39.0),  
-    crateThree = vector3(1095.01, -3096.59, -39.0), 
-    crateFour = vector3(1091.53, -3096.59, -39.0), 
-    weaponCrate = vector3(1095.94, -3102.36, -39.0) 
+    crateOne = vector4(1101.32, -3096.59, -39.0, 0),   
+    crateTwo = vector4(1097.69, -3096.59, -39.0, 0),  
+    crateThree = vector4(1095.01, -3096.59, -39.0, 90), 
+    crateFour = vector4(1091.53, -3096.59, -39.0, 0), 
+    weaponCrate = vector4(1095.94, -3102.36, -39.0, 180) 
 }
 
 -- Guard Positions
 Config.Guards = {
-    guardOne = vector3(1089.17, -3101.77, -39.0),  
-    guardTwo = vector3(1091.4, -3098.38, -39.0),   
-    guardDog = vector3(1088.15, -3098.83, -39.0)   
+    guardOne = vector4(1089.17, -3101.77, -39.0, 270),  
+    guardTwo = vector4(1091.4, -3098.38, -39.0, 270),   
+    guardDog = vector4(1097.76, -3102.53, -39.0, 291.53)   
 }
 
 -- Settings for robbery
