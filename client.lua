@@ -33,33 +33,40 @@ exports['qb-target']:AddBoxZone("disableSecurity", Config.Warehouse.disableSecur
     distance = 2.5
 })
 
+-- Function for a single hack attempt
+function AttemptHack(level, time, attempts)
+    return exports["numbers"]:StartNumbersGame(level, time, attempts)
+end
+
+-- Function for the Full Hacking Sequence
+function StartHackingSequence()
+    -- First hack attempt
+    if AttemptHack(6, 10, 5) then
+        Wait(200)
+        
+        -- Second hack attempt
+        if AttemptHack(7, 10, 8) then
+            QBCore.Functions.Notify("Security disabled. All players can now enter the warehouse!")
+            TriggerServerEvent("warehouse:enableEntryForAll")  -- Notify the server to enable entry for all players
+            return true
+        end
+    end
+
+    -- Hacking failed
+    QBCore.Functions.Notify("Hack failed! Police have been alerted.", "error")
+    TriggerServerEvent("warehouse:alertPolice")
+    return false
+end
+
 -- Event for Disabling Security
 RegisterNetEvent('warehouse:disableSecurity', function()
-    local playerPed = PlayerPedId()
     local hasItem = QBCore.Functions.HasItem("electronickit")
 
     if hasItem then
-        -- Start the hacking sequence
-        if exports["numbers"]:StartNumbersGame(6, 10, 5) then
-            Wait(200)
-            if exports["numbers"]:StartNumbersGame(7, 10, 8) then
-                Wait(200)
-                -- Successful hack
-                QBCore.Functions.Notify("Security disabled. All players can now enter the warehouse!")
-                
-                -- Notify the server to enable entry for all players
-                TriggerServerEvent("warehouse:enableEntryForAll")
-
-            else
-                -- Failed at the final stage
-                QBCore.Functions.Notify("Hack failed! Police have been alerted.", "error")
-                TriggerServerEvent("warehouse:alertPolice")
-            end
-        else
-            -- Failed at the first stage
-            QBCore.Functions.Notify("Hack failed! Police have been alerted.", "error")
-            TriggerServerEvent("warehouse:alertPolice")
-        end
+        -- Call the hacking sequence twice
+        StartHackingSequence()
+        Wait(2000) -- Arbitrary delay between hack attempts
+        StartHackingSequence()
     else
         QBCore.Functions.Notify("You need an electronickit to disable the security!", "error")
     end
