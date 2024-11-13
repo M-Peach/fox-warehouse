@@ -1,58 +1,93 @@
-Config = {}
+local QBCore = exports['qb-core']:GetCoreObject()
 
--- Warehouse Location
-Config.Warehouse = {
-    entry = vector3(978.14, -1500.14, 31.51),       
-    frontExit = vector3(1105.07, -3099.63, -39.0),  
-    backExit = vector3(1087.44, -3099.38, -39.0),   
-    disableSecurity = vector3(977.71, -1497.37, 31.29),
-    crateOne = vector3(1101.32, -3096.59, -39.0),   
-    crateTwo = vector3(1097.69, -3096.59, -39.0),  
-    crateThree = vector3(1095.01, -3096.59, -39.0), 
-    crateFour = vector3(1091.53, -3096.59, -39.0), 
-    weaponCrate = vector3(1095.94, -3102.36, -39.0) 
-}
+-- Create Blip for Warehouse Location
+Citizen.CreateThread(function()
+    local blip = AddBlipForCoord(980.26, -1497.75, 37.37)
+    SetBlipSprite(blip, 478)                   -- Icon for warehouse
+    SetBlipDisplay(blip, 4)                    -- Display option
+    SetBlipScale(blip, 0.8)                    -- Scale
+    SetBlipColour(blip, 1)                     -- Color
+    SetBlipAsShortRange(blip, true)
+    BeginTextCommandSetBlipName("STRING")
+    AddTextComponentString("Warehouse")
+    EndTextCommandSetBlipName(blip)
+end)
 
--- Guard Positions
-Config.Guards = {
-    guardOne = vector3(1089.17, -3101.77, -39.0),  
-    guardTwo = vector3(1091.4, -3098.38, -39.0),   
-    guardDog = vector3(1088.15, -3098.83, -39.0)   
-}
+-- Target for Disabling Security
+exports['qb-target']:AddBoxZone("disableSecurity", Config.Warehouse.disableSecurity, 1.0, 1.0, {
+    name = "disableSecurity",
+    heading = 0,
+    debugPoly = false,
+    minZ = 30.29,
+    maxZ = 32.29
+}, {
+    options = {
+        {
+            type = "client",
+            event = "warehouse:disableSecurity",
+            icon = "fas fa-bolt",
+            label = "Disable Security",
+            item = "electronickit"   -- Requires the start item
+        },
+    },
+    distance = 2.5
+})
 
--- Settings for robbery
-Config.Robbery = {
-    requiredPolice = 2,                 
-    requiredStartItem = "electronickit",
-    robberyTime = 600,                  
-    coolDown = 1800                     
-}
+-- Event for Disabling Security
+RegisterNetEvent('warehouse:disableSecurity', function()
+    local playerPed = PlayerPedId()
+    local hasItem = QBCore.Functions.HasItem("electronickit")
 
--- Item and reward settings
-Config.Items = {
-    {item = "gold_bar", chance = 50},   
-    {item = "diamond", chance = 30},    
-    {item = "cash_stack", chance = 70},  
-}
+    if hasItem then
+        -- Start the hacking sequence
+        if exports["numbers"]:StartNumbersGame(6, 10, 5) then
+            Wait(200)
+            if exports["numbers"]:StartNumbersGame(7, 10, 8) then
+                Wait(200)
+                -- Successful hack
+                QBCore.Functions.Notify("Security disabled. All players can now enter the warehouse!")
+                
+                -- Notify the server to enable entry for all players
+                TriggerServerEvent("warehouse:enableEntryForAll")
 
--- Weapon Crate loot settings
-Config.WeaponCrateLoot = {
-    {item = "weapon_pistol50", chance = 30, max = 1},
-    {item = "pistol_ammo", chance = 100, max = 6},
-    {item = "weapon_pistol", chance = 50, max = 1},
-    {item = "weapon_combatpistol", chance = 40, max = 1}
-}
+            else
+                -- Failed at the final stage
+                QBCore.Functions.Notify("Hack failed! Police have been alerted.", "error")
+                TriggerServerEvent("warehouse:alertPolice")
+            end
+        else
+            -- Failed at the first stage
+            QBCore.Functions.Notify("Hack failed! Police have been alerted.", "error")
+            TriggerServerEvent("warehouse:alertPolice")
+        end
+    else
+        QBCore.Functions.Notify("You need an electronickit to disable the security!", "error")
+    end
+end)
 
--- Crate loot settings
-Config.CrateLoot = {
-    {item = "coke_small_brick", chance = 40, max = 2},
-    {item = "c4_bomb", chance = 40, max = 2},
-    {item = "advancedlockpick", chance = 70, max = 3},
-    {item = "weapon_knuckle", chance = 60, max = 2},
-    {item = "armor", chance = 50, max = 2},
-    {item = "goldbar", chance = 60, max = 3},
-    {item = "ifaks", chance = 50, max = 3},
-    {item = "bandage", chance = 80, max = 4},
-    {item = "radioscanner", chance = 60, max = 1},
-    {item = "nos", chance = 60, max = 3}
-}
+-- Event to Enter the Warehouse
+RegisterNetEvent('warehouse:enterWarehouse', function()
+    SetEntityCoords(PlayerPedId(), Config.Warehouse.frontExit.x, Config.Warehouse.frontExit.y, Config.Warehouse.frontExit.z)
+    QBCore.Functions.Notify("You have entered the warehouse.")
+end)
+
+-- Client event to enable entry target for all players
+RegisterNetEvent('warehouse:enableEntryTarget', function()
+    exports['qb-target']:AddBoxZone("warehouseEntry", Config.Warehouse.entry, 1.0, 1.0, {
+        name = "warehouseEntry",
+        heading = 0,
+        debugPoly = false,
+        minZ = Config.Warehouse.entry.z - 1.0,
+        maxZ = Config.Warehouse.entry.z + 1.0
+    }, {
+        options = {
+            {
+                type = "client",
+                event = "warehouse:enterWarehouse",
+                icon = "fas fa-door-open",
+                label = "Enter Warehouse"
+            },
+        },
+        distance = 2.5
+    })
+end)
