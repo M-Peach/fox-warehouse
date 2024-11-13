@@ -14,7 +14,7 @@ Citizen.CreateThread(function()
 end)
 
 -- Target for Disabling Security
-exports['qb-target']:AddBoxZone("disableSecurity", vector3(977.71, -1497.37, 31.29), 1.0, 1.0, {
+exports['qb-target']:AddBoxZone("disableSecurity", Config.Warehouse.disableSecurity, 1.0, 1.0, {
     name = "disableSecurity",
     heading = 0,
     debugPoly = false,
@@ -40,9 +40,12 @@ RegisterNetEvent('warehouse:disableSecurity', function()
 
     if hasItem then
         -- Start the hacking sequence
-        if exports["hacking"]:StartNumbersGame(4, 10, 5) then
-            if exports["hacking"]:StartNumbersGame(6, 20, 5) then
-                if exports["hacking"]:StartNumbersGame(8, 30, 8) then
+        if exports["numbers"]:StartNumbersGame(4, 10, 5) then
+                Wait(200)
+            if exports["numbers"]:StartNumbersGame(6, 20, 5) then
+                    Wait(200)
+                if exports["numbers"]:StartNumbersGame(8, 30, 8) then
+                        Wait(200)
                     -- Successful hack
                     QBCore.Functions.Notify("Security disabled. You have limited time before it reactivates!")
                     -- Additional actions for disabling security, such as setting a timer or triggering an alarm countdown
