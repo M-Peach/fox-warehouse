@@ -42,20 +42,13 @@ RegisterNetEvent('warehouse:disableSecurity', function()
         -- Start the hacking sequence
         if exports["numbers"]:StartNumbersGame(4, 10, 5) then
                 Wait(200)
-            if exports["numbers"]:StartNumbersGame(6, 20, 5) then
+            if exports["numbers"]:StartNumbersGame(8, 30, 8) then
                     Wait(200)
-                if exports["numbers"]:StartNumbersGame(8, 30, 8) then
-                        Wait(200)
-                    -- Successful hack
-                    QBCore.Functions.Notify("Security disabled. You have limited time before it reactivates!")
-                    -- Additional actions for disabling security, such as setting a timer or triggering an alarm countdown
-                else
-                    -- Failed at the final stage
-                    QBCore.Functions.Notify("Hack failed! Police have been alerted.", "error")
-                    TriggerServerEvent("warehouse:alertPolice")
-                end
+                -- Successful hack
+                QBCore.Functions.Notify("Security disabled. You have limited time before it reactivates!")
+                -- Additional actions for disabling security, such as setting a timer or triggering an alarm countdown
             else
-                -- Failed at the second stage
+                -- Failed at the final stage
                 QBCore.Functions.Notify("Hack failed! Police have been alerted.", "error")
                 TriggerServerEvent("warehouse:alertPolice")
             end
