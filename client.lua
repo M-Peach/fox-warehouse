@@ -41,12 +41,15 @@ RegisterNetEvent('warehouse:disableSecurity', function()
     if hasItem then
         -- Start the hacking sequence
         if exports["numbers"]:StartNumbersGame(6, 10, 5) then
-                Wait(200)
+            Wait(200)
             if exports["numbers"]:StartNumbersGame(7, 10, 8) then
-                    Wait(200)
+                Wait(200)
                 -- Successful hack
-                QBCore.Functions.Notify("Security disabled. You have limited time before it reactivates!")
-                -- Additional actions for disabling security, such as setting a timer or triggering an alarm countdown
+                QBCore.Functions.Notify("Security disabled. All players can now enter the warehouse!")
+                
+                -- Notify the server to enable entry for all players
+                TriggerServerEvent("warehouse:enableEntryForAll")
+
             else
                 -- Failed at the final stage
                 QBCore.Functions.Notify("Hack failed! Police have been alerted.", "error")
@@ -60,4 +63,31 @@ RegisterNetEvent('warehouse:disableSecurity', function()
     else
         QBCore.Functions.Notify("You need an electronickit to disable the security!", "error")
     end
+end)
+
+-- Event to Enter the Warehouse
+RegisterNetEvent('warehouse:enterWarehouse', function()
+    SetEntityCoords(PlayerPedId(), Config.Warehouse.frontExit.x, Config.Warehouse.frontExit.y, Config.Warehouse.frontExit.z)
+    QBCore.Functions.Notify("You have entered the warehouse.")
+end)
+
+-- Client event to enable entry target for all players
+RegisterNetEvent('warehouse:enableEntryTarget', function()
+    exports['qb-target']:AddBoxZone("warehouseEntry", Config.Warehouse.entry, 1.0, 1.0, {
+        name = "warehouseEntry",
+        heading = 0,
+        debugPoly = false,
+        minZ = Config.Warehouse.entry.z - 1.0,
+        maxZ = Config.Warehouse.entry.z + 1.0
+    }, {
+        options = {
+            {
+                type = "client",
+                event = "warehouse:enterWarehouse",
+                icon = "fas fa-door-open",
+                label = "Enter Warehouse"
+            },
+        },
+        distance = 2.5
+    })
 end)
