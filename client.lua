@@ -34,8 +34,8 @@ exports['qb-target']:AddBoxZone("disableSecurity", Config.Warehouse.disableSecur
 })
 
 -- Function for a single hack attempt
-function AttemptHack(level, time, attempts)
-    return exports["numbers"]:StartNumbersGame(level, time, attempts)
+function AttemptHack(level, showtime, typetime)
+    return exports["numbers"]:StartNumbersGame(level, showtime, typetime)
 end
 
 -- Function for the Full Hacking Sequence
